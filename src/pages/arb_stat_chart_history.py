@@ -129,14 +129,26 @@ def show_live_spread_component(_selected_exchange, _ticker_a, _ticker_b, mean, s
         st.write(f"Buy spread (sell {ticker_a} and buy {ticker_b})")
         # here we can send notification or market orders
 
-def show_stop_loss_and_take(mean, std, _stop_loss_z, _take_profit_z):
+def generate_link_position_info(_text, _ticker_a, _ticker_b, _entry_a, _entry_b, _take, _stop):
+    url = f"/arb_stat_position?exchange=bybit_swap&ticker_a={_ticker_a}&ticker_b={_ticker_b}&entry_a={_entry_a}&entry_b={_entry_b}&take={_take}&stop={_stop}"
+    return f'<a href="{url}" target="_blank">{_text}</a>'
+
+def show_stop_loss_and_take(mean, std, _stop_loss_z, _take_profit_z, _ticker_a, _ticker_b, _entry_a, _entry_b):
     for_open_long_stop = mean - _stop_loss_z * std
     for_open_long_take = mean - _take_profit_z * std
     st.write(f"For long spread, take {for_open_long_take:.8f}, stop {for_open_long_stop:.8f}")
+    st.markdown(
+        generate_link_position_info('Open position info for long', _ticker_a, _ticker_b, _entry_a, _entry_b, for_open_long_take, for_open_long_stop),
+        unsafe_allow_html=True
+    )
 
     for_open_short_stop = mean + _stop_loss_z * std
     for_open_short_take = mean + _take_profit_z * std
     st.write(f"For short spread, take {for_open_short_take:.8f}, stop {for_open_short_stop:.8f}")
+    st.markdown(
+        generate_link_position_info('Open position info for short', _ticker_a, _ticker_b, _entry_a, _entry_b, for_open_short_take, for_open_short_stop),
+        unsafe_allow_html=True
+    )
 
 st.title(f"⚡ {TITLE}")
 
@@ -226,7 +238,9 @@ if st.button("Load", use_container_width=True):
         move_percent = (df['upper_z'].iloc[-1] / df['mean'].iloc[-1] - 1) * 100
         st.info(f"Spread movement potential (for Z-score coefficient {entry_z}): {move_percent:.2f}%")
         # current price
-        st.info(f"price {ticker_a}: {df[a_ohlcv_key].iloc[-1]:.8f} | price {ticker_b}: {df[b_ohlcv_key].iloc[-1]:.8f}")
+        current_price_a = df[a_ohlcv_key].iloc[-1]
+        current_price_b = df[b_ohlcv_key].iloc[-1]
+        st.info(f"price {ticker_a}: {current_price_a:.8f} | price {ticker_b}: {current_price_b:.8f}")
 
         # ATR info
         st.info(f"ATR for {ticker_a} is {atr_a}, ATR for {ticker_b} is {atr_b}")
@@ -254,7 +268,7 @@ if st.button("Load", use_container_width=True):
             st.success(t_statistic_message)
         else:
             st.warning(t_statistic_message)
-        show_stop_loss_and_take(df['mean'].iloc[-1], df['std'].iloc[-1], stop_loss_z, take_profit_z)
+        show_stop_loss_and_take(df['mean'].iloc[-1], df['std'].iloc[-1], stop_loss_z, take_profit_z, ticker_a, ticker_b, current_price_a, current_price_b)
         # live spread
         show_live_spread_component(selected_exchange, ticker_a, ticker_b, df['mean'].iloc[-1], df['std'].iloc[-1], amount_size_usd, entry_z)
 

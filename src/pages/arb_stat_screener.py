@@ -307,6 +307,19 @@ def display_analysis_results(candidates_list, z_score_threshold):
     
     styled_candidates_df = candidates_df.style.apply(highlight_trading_opportunities, axis=1)
     st.dataframe(styled_candidates_df, use_container_width=True)
+
+    st.subheader("Links for chart history")
+    def make_link(row):
+        symbols = row['pair'].split(' - ')
+        url = f"/arb_stat_chart_history?ticker_a={symbols[1]}&ticker_b={symbols[0]}"
+        return f'<a href="{url}" target="_blank">Open</a>'
+
+    with_links = candidates_df.copy()
+    with_links['Chart'] = with_links.apply(make_link, axis=1)
+    st.markdown(
+        with_links.to_html(escape=False, index=False),
+        unsafe_allow_html=True
+    )
     
     # Display trading ready pairs
     st.subheader("🎯 Trading Ready Pairs")
