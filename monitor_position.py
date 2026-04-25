@@ -102,22 +102,12 @@ def monitor_positions(_positions: list[PositionInfo]):
 
 positions = [
     PositionInfo(
-        ticker_a='VIRTUAL/USDT:USDT',
-        ticker_b='MAGIC/USDT:USDT',
-        coins_a=15.0,
-        coins_b=150.0,
-        stop_loss_price=0.09797865,
-        take_profit_price=0.09374944,
-        close_direction=Direction.LONG,
-        is_closed=False
-    ),
-    PositionInfo(
-        ticker_a='XTZ/USDT:USDT',
-        ticker_b='BAT/USDT:USDT',
-        coins_a=60.0,
-        coins_b=210.0,
-        stop_loss_price=0.29452220,
-        take_profit_price=0.28071350,
+        ticker_a='JELLYJELLY/USDT:USDT',
+        ticker_b='ANIME/USDT:USDT',
+        coins_a=220.0,
+        coins_b=1990.0,
+        stop_loss_price=0.11050000,
+        take_profit_price=0.10553326,
         close_direction=Direction.LONG,
         is_closed=True
     )

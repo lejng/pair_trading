@@ -51,7 +51,8 @@ docker-compose down
 ```
 # dev mode
 streamlit run main_web_app.py
-caffeinate -i python pair_trading_handle_open_position.py
+caffeinate -i python monitor_position.py
+python open_position.py
 
 # production mode
 streamlit run main_web_app.py --server.runOnSave=false --server.fileWatcherType=none --client.toolbarMode=hidden --server.headless=true

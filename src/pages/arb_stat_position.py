@@ -87,11 +87,11 @@ def show_live_spread_component(_selected_exchange, _ticker_a, _ticker_b, _amount
     live_spread = find_live_spread(_selected_exchange, _ticker_a, _ticker_b, _amount_size_usd)
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.metric("Current slippage A", f"{live_spread["slippage_a_pct"]:.8f} %")
-        st.metric("Current slippage B", f"{live_spread["slippage_b_pct"]:.8f} %")
+        st.metric("Current slippage A", f"{live_spread['slippage_a_pct']:.8f} %")
+        st.metric("Current slippage B", f"{live_spread['slippage_b_pct']:.8f} %")
     with c2:
-        st.metric("Current Short Spread", f"{live_spread["live_short_spread"]:.8f}")
-        st.metric("Current Long Spread", f"{live_spread["live_long_spread"]:.8f}")
+        st.metric("Current Short Spread", f"{live_spread['live_short_spread']:.8f}")
+        st.metric("Current Long Spread", f"{live_spread['live_long_spread']:.8f}")
 
 st.title(f"⚡ {TITLE}")
 
@@ -102,7 +102,7 @@ selected_exchange_name = st.selectbox(
     index=get_index_by_query_param(ex_list, EXCHANGE_PARAM_KEY),
     key=EXCHANGE_PARAM_KEY, on_change=update_url
 )
-amount_size_usd = st.number_input("Trading amount (sum of legs)", min_value=1.0, max_value=100000.0, value=get_float_value_from_url(AMOUNT_SIZE_USD_PARAM_KEY, 100.0), key=AMOUNT_SIZE_USD_PARAM_KEY, on_change=update_url)
+amount_size_usd = st.number_input("Trading amount (for one leg)", min_value=1.0, max_value=100000.0, value=get_float_value_from_url(AMOUNT_SIZE_USD_PARAM_KEY, 100.0), key=AMOUNT_SIZE_USD_PARAM_KEY, on_change=update_url)
 
 # columns on page
 col1, col2 = st.columns(2)
@@ -147,6 +147,10 @@ st.divider()
 if st.button("Load", use_container_width=True):
     try:
         entry = entry_b / entry_a
+        coins_a = amount_size_usd / entry_a
+        coins_b = amount_size_usd / entry_b
+
+        st.info(f"Recommended coins size for position {amount_size_usd} USDT is {ticker_a}: {coins_a:.8f} coins and {ticker_b}: {coins_b:.8f} coins")
         # Load data
         a_ohlcv = selected_exchange.get_ohlcv(ticker_a, timeframe, candle_limit)
         b_ohlcv = selected_exchange.get_ohlcv(ticker_b, timeframe, candle_limit)
