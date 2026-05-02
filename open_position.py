@@ -22,7 +22,8 @@ class OpenPositionInfo:
     ticker_b: str
     coins_a: float
     coins_b: float
-    close_direction: Direction
+    open_direction: Direction
+    leverage: int = 1
 
 # Load keys from .env
 load_dotenv()
@@ -30,18 +31,20 @@ load_dotenv()
 exchange = BybitSwapConnector(True)
 
 def open_position(_position: OpenPositionInfo):
-    if _position.close_direction == Direction.LONG:
-        exchange.create_market_buy_order(_position.ticker_b, _position.coins_b)  # Откупаем B
-        exchange.create_market_sell_order(_position.ticker_a, _position.coins_a)  # Продаем A
-    if _position.close_direction == Direction.SHORT:
-        exchange.create_market_sell_order(_position.ticker_b, _position.coins_b)  # Продаем B
-        exchange.create_market_buy_order(_position.ticker_a, _position.coins_a)  # Откупаем A
+    if _position.open_direction == Direction.LONG:
+        exchange.create_market_buy_order(_position.ticker_b, _position.coins_b, _position.leverage)  # Откупаем B
+        exchange.create_market_sell_order(_position.ticker_a, _position.coins_a, _position.leverage)  # Продаем A
+    if _position.open_direction == Direction.SHORT:
+        exchange.create_market_sell_order(_position.ticker_b, _position.coins_b, _position.leverage)  # Продаем B
+        exchange.create_market_buy_order(_position.ticker_a, _position.coins_a, _position.leverage)  # Откупаем A
 
 position = OpenPositionInfo(
-        ticker_a='JELLYJELLY/USDT:USDT',
-        ticker_b='ANIME/USDT:USDT',
-        coins_a=220.0,
-        coins_b=1990.0,
-        close_direction=Direction.SHORT,
-    )
+                ticker_a='JASMY/USDT:USDT',
+                ticker_b='DOGE/USDT:USDT',
+                coins_a=2665.0,
+                coins_b=137.0,
+                open_direction=Direction.SHORT,
+                #open_direction=Direction.LONG,
+            )
+
 open_position(position)

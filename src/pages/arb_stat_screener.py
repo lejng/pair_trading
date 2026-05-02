@@ -253,11 +253,13 @@ def run_pair_analysis(symbol_filters,
     long_term_pairs = perform_long_timeframe_analysis(
         bybit_exchange, eligible_symbols, long_timeframe, candle_limit, ema_period, min_crossings
     )
-    
-    # Step 3: Short timeframe validation
-    short_term_pairs = perform_short_timeframe_validation(
-        bybit_exchange, long_term_pairs, short_timeframe, candle_limit, ema_period, min_crossings
-    )
+
+    short_term_pairs = long_term_pairs
+    if not long_timeframe == short_timeframe:
+        # Step 3: Short timeframe validation
+        short_term_pairs = perform_short_timeframe_validation(
+            bybit_exchange, long_term_pairs, short_timeframe, candle_limit, ema_period, min_crossings
+        )
     
     # Step 4: Compile final results
     final_candidates = compile_final_candidates(long_term_pairs, short_term_pairs)
@@ -454,15 +456,15 @@ z_score_threshold_input = st.number_input(
 # Timeframe selection
 short_timeframe_input = st.selectbox(
     "Short Timeframe",
-    options=["1m", "5m", "15m", "30m", "1h", "2h", "4h"],
+    options=["1m", "5m", "15m", "30m", "1h", "2h", "4h", "1d", "3d", "1w"],
     index=4,  # Default to "1h"
     help="Timeframe for short-term analysis"
 )
 
 long_timeframe_input = st.selectbox(
     "Long Timeframe",
-    options=["1h", "2h", "4h", "1d", "3d", "1w"],
-    index=3,  # Default to "1d"
+    options=["1m", "5m", "15m", "30m", "1h", "2h", "4h", "1d", "3d", "1w"],
+    index=7,  # Default to "1d"
     help="Timeframe for long-term analysis"
 )
 
@@ -484,8 +486,9 @@ if st.button("🔍 Search Pairs", type="primary"):
     # Display results immediately
     ready_trading_pairs = display_analysis_results(analysis_results, z_score_threshold_input)
 
-    binance_connection = ccxt.binance({'options': {'defaultType': 'future'}})
+
     # Binance verification section
-    perform_binance_verification(analysis_results, binance_connection, short_timeframe_input, candle_limit_input, ema_period_input, z_score_threshold_input)
+    #binance_connection = ccxt.binance({'options': {'defaultType': 'future'}})
+    #perform_binance_verification(analysis_results, binance_connection, short_timeframe_input, candle_limit_input, ema_period_input, z_score_threshold_input)
 
 

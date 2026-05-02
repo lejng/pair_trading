@@ -151,6 +151,31 @@ if st.button("Load", use_container_width=True):
         coins_b = amount_size_usd / entry_b
 
         st.info(f"Recommended coins size for position {amount_size_usd} USDT is {ticker_a}: {coins_a:.8f} coins and {ticker_b}: {coins_b:.8f} coins")
+        code_open_position = f"""
+            OpenPositionInfo(
+                ticker_a='{ticker_a}',
+                ticker_b='{ticker_b}',
+                coins_a={coins_a},
+                coins_b={coins_b},
+                #open_direction=Direction.SHORT,
+                #open_direction=Direction.LONG,
+            )
+            """
+        st.code(code_open_position, language='python')
+        code_monitor_position = f"""
+    PositionInfo(
+        ticker_a='{ticker_a}',
+        ticker_b='{ticker_b}',
+        coins_a={coins_a},
+        coins_b={coins_b},
+        stop_loss_price={stop_loss},
+        take_profit_price={take_profit},
+        # close_direction=Direction.LONG,
+        # close_direction=Direction.SHORT,
+        is_closed=False
+    )
+                    """
+        st.code(code_monitor_position, language='python')
         # Load data
         a_ohlcv = selected_exchange.get_ohlcv(ticker_a, timeframe, candle_limit)
         b_ohlcv = selected_exchange.get_ohlcv(ticker_b, timeframe, candle_limit)

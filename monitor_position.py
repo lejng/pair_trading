@@ -29,6 +29,7 @@ class PositionInfo:
     take_profit_price: float
     close_direction: Direction
     is_closed: bool
+    leverage: int = 1
 
 # Load keys from .env
 load_dotenv()
@@ -37,11 +38,11 @@ exchange = BybitSwapConnector(True)
 
 def close_position(position: PositionInfo):
     if position.close_direction == Direction.LONG:
-        exchange.create_market_buy_order(position.ticker_b, position.coins_b)  # Откупаем B
-        exchange.create_market_sell_order(position.ticker_a, position.coins_a)  # Продаем A
+        exchange.create_market_buy_order(position.ticker_b, position.coins_b, position.leverage)  # Откупаем B
+        exchange.create_market_sell_order(position.ticker_a, position.coins_a, position.leverage)  # Продаем A
     if position.close_direction == Direction.SHORT:
-        exchange.create_market_sell_order(position.ticker_b, position.coins_b)  # Продаем B
-        exchange.create_market_buy_order(position.ticker_a, position.coins_a)  # Откупаем A
+        exchange.create_market_sell_order(position.ticker_b, position.coins_b, position.leverage)  # Продаем B
+        exchange.create_market_buy_order(position.ticker_a, position.coins_a, position.leverage)  # Откупаем A
 
 def get_current_spread(position: PositionInfo):
     orderbook_a = exchange.get_order_book(position.ticker_a)
@@ -101,15 +102,28 @@ def monitor_positions(_positions: list[PositionInfo]):
 # ------------------ Main ---------------------------------
 
 positions = [
-    PositionInfo(
-        ticker_a='JELLYJELLY/USDT:USDT',
-        ticker_b='ANIME/USDT:USDT',
-        coins_a=220.0,
-        coins_b=1990.0,
-        stop_loss_price=0.11050000,
-        take_profit_price=0.10553326,
+PositionInfo(
+        ticker_a='RAYDIUM/USDT:USDT',
+        ticker_b='MASK/USDT:USDT',
+        coins_a=23.0,
+        coins_b=38.0,
+        stop_loss_price=0.60999170,
+        take_profit_price=0.64997724,
+        # close_direction=Direction.LONG,
+        close_direction=Direction.SHORT,
+        is_closed=False
+    ),
+PositionInfo(
+        ticker_a='JASMY/USDT:USDT',
+        ticker_b='DOGE/USDT:USDT',
+        coins_a=2665.0,
+        coins_b=137.0,
+        stop_loss_price=20.208173071586717,
+        take_profit_price=18.04825004541366,
         close_direction=Direction.LONG,
-        is_closed=True
+        # close_direction=Direction.SHORT,
+        is_closed=False
     )
+
 ]
 monitor_positions(positions)

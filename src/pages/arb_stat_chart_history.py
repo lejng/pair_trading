@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
@@ -268,6 +269,20 @@ if st.button("Load", use_container_width=True):
             st.success(t_statistic_message)
         else:
             st.warning(t_statistic_message)
+
+
+        def calculate_log_returns(prices: pd.Series) -> pd.Series:
+            """
+            Calculate logarithmic returns from price series.
+            Formula: r_t = ln(P_t / P_{t-1}) = ln(P_t) - ln(P_{t-1})
+            """
+            price_ratio = prices / prices.shift(1)
+            log_returns = np.log(price_ratio)
+            clean_returns = log_returns.dropna()
+            return clean_returns
+
+        correlation = np.corrcoef(calculate_log_returns(df[a_ohlcv_key]), calculate_log_returns(df[b_ohlcv_key]))[0, 1]
+        st.info(f"Correlation: {correlation:.2f}")
         show_stop_loss_and_take(df['mean'].iloc[-1], df['std'].iloc[-1], stop_loss_z, take_profit_z, ticker_a, ticker_b, current_price_a, current_price_b)
         # live spread
         show_live_spread_component(selected_exchange, ticker_a, ticker_b, df['mean'].iloc[-1], df['std'].iloc[-1], amount_size_usd, entry_z)
